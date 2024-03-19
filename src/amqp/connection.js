@@ -60,7 +60,7 @@ function parseUri (uri) {
     const parsed = new url.URL(uri);
     const heartbeat = parsed.searchParams.get('heartbeat');
     return {
-      useSSL: parsed.protocol === 'amqps',
+      useSSL: parsed.protocol.startsWith('amqps'),
       user: parsed.username,
       pass: parsed.password,
       host: parsed.hostname,
