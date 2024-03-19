@@ -232,6 +232,7 @@ declare namespace Broker {
     queueLimit?: number;
     deadLetter?: string;
     subscribe?: boolean;
+    autoDelete?: boolean;
     passive?: boolean;
     messageTtl?: number;
     type?: "classic" | "quorum";
