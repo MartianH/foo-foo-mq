@@ -39,19 +39,28 @@ function aliasOptions (options, aliases, ...omit) {
 }
 
 function define (channel, options, subscriber, connectionName) {
+  let omition = ['subscribe', 'limit', 'noBatch', 'unique', 'type'];
+  /**
+   * Quorum queues dropped support for message prioritiy, exclusivity and non-durable queues
+   *
+   * @see https://www.rabbitmq.com/docs/quorum-queues#feature-matrix
+   */
+  if (options.type === 'quorum') {
+    const incompatible = ['exclusive', 'autoDelete', 'maxPriority'];
+    omition = [...omition, ...incompatible];
+  }
   const valid = aliasOptions(options, {
-    type: 'x-queue-type',
     queuelimit: 'maxLength',
     queueLimit: 'maxLength',
     deadletter: 'deadLetterExchange',
     deadLetter: 'deadLetterExchange',
     deadLetterRoutingKey: 'deadLetterRoutingKey'
-  }, 'subscribe', 'limit', 'noBatch', 'unique');
+  }, ...omition);
+  valid.arguments = { 'x-queue-type': options.type || 'classic' };
   topLog.info("Declaring queue '%s' on connection '%s' with the options: %s",
     options.uniqueName, connectionName, JSON.stringify(options));
 
   let queuePromise;
-
   if (options.passive) {
     queuePromise = channel.checkQueue(options.uniqueName);
   } else {
