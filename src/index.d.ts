@@ -198,7 +198,7 @@ declare namespace Broker {
     port?: number;
     server?: string | string[];
     vhost?: string;
-    protocol?: string;
+    protocol?: "amqp" | "amqps";
     user?: string;
     pass?: string;
     timeout?: number;
@@ -232,6 +232,9 @@ declare namespace Broker {
     queueLimit?: number;
     deadLetter?: string;
     subscribe?: boolean;
+    passive?: boolean;
+    messageTtl?: number;
+    type?: "classic" | "quorum";
   }
 
   export interface BindingOptions {
