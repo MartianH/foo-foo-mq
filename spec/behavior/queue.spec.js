@@ -53,11 +53,27 @@ describe('AMQP Queue', function () {
       });
     });
 
+    describe('when options.type is not set', function () {
+      it('sets `x-queue-type` to "classic"', () => {
+        const qType = 'classic';
+        options.queueLimit = 1000;
+        options.maxPriority = 100;
+        return ampqQueue(options, topology, serializers)
+          .then((instance) => {
+            return instance.define();
+          })
+          .then(() => {
+            amqpChannelMock.assertQueue.calledWith(
+              options.uniqueName,
+              { ...options, arguments: { 'x-queue-type': qType } });
+          });
+      });
+    });
+
     describe('when options.type is "quorum"', function () {
       it('sets `x-queue-type` to "quorum" and omits incompatible fields', () => {
         options.type = 'quorum';
         options.queueLimit = 1000;
-        options.autoDelete = true;
         options.maxPriority = 100;
         return ampqQueue(options, topology, serializers)
           .then((instance) => {
