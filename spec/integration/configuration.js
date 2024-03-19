@@ -1,5 +1,6 @@
 module.exports = {
   connection: {
+    protocol: 'amqp',
     name: 'default',
     user: 'guest',
     pass: 'guest',

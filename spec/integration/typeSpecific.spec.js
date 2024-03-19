@@ -24,13 +24,15 @@ describe('Type Handling On Any Queue', function () {
           name: 'rabbot-q.topic-1',
           autoDelete: true,
           subscribe: true,
-          deadletter: 'rabbot-ex.deadletter'
+          deadletter: 'rabbot-ex.deadletter',
+          type: 'classic'
         },
         {
           name: 'rabbot-q.topic-2',
           autoDelete: true,
           subscribe: true,
-          deadletter: 'rabbot-ex.deadletter'
+          deadletter: 'rabbot-ex.deadletter',
+          type: 'quorum'
         }
       ],
       bindings: [
