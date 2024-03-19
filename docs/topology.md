@@ -10,7 +10,7 @@ If a disconnect takes place, foo-foo-mq will attempt to re-establish the connect
 
 This example shows most of the available options described above.
 ```javascript
-  var settings = {
+  const settings = {
     connection: {
       user: "guest",
       pass: "guest",
@@ -39,7 +39,7 @@ This example shows most of the available options described above.
 
 To establish a connection with all settings in place and ready to go call configure:
 ```javascript
-  var rabbit = require( "foo-foo-mq" );
+  const rabbit = require( "foo-foo-mq" );
 
   rabbit.configure( settings ).done( function() {
     // ready to go!
@@ -74,8 +74,15 @@ The call returns a promise that can be used to determine when the queue has been
 
 Options is a hash that can contain the following:
 
+> **WARNING** classic queues [are deprecated](https://www.rabbitmq.com/blog/2021/08/21/4.0-deprecation-announcements) and will [no longer be supported after v3.13](https://www.rabbitmq.com/blog/2024/03/11/rabbitmq-3.13.0-announcement#thats-a-wrap-for-3x).
+>
+> Unsupported options ('exclusive', 'autoDelete', 'maxPriority') given to `quorum` queues will be *silently ignored*.
+>
+> Consult the [RabbitMQ feature matrix](https://www.rabbitmq.com/docs/quorum-queues#feature-matrix) for supported features.
+
 | option | type | description | default  |
 |--:|:-:|:--|:-:|
+| **type** | string | Set the queue type to either `classic` or `quorum` | `classic` |
 | **autoDelete** | boolean | delete when consumer count goes to 0 | |
 | **durable** | boolean | survive broker restarts | false |
 | **exclusive** | boolean | limits queue to the current connection only (danger) | false |
@@ -93,7 +100,6 @@ Options is a hash that can contain the following:
 | **unique** | `"hash", `"id", "consistent"` | creates a unique queue name by including the client id or hash in the name | |
 | **poison** | boolean | indicates that this queue is specifically for poison / rejected messages| false |
 | **passive** | boolean | when `true` will not create the queueName specified | false |
-| **type** | string | Set the queue type to either `classic` or `quorum` | |
 
 ### unique
 
