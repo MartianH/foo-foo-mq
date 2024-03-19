@@ -40,6 +40,7 @@ function aliasOptions (options, aliases, ...omit) {
 
 function define (channel, options, subscriber, connectionName) {
   const valid = aliasOptions(options, {
+    type: 'x-queue-type',
     queuelimit: 'maxLength',
     queueLimit: 'maxLength',
     deadletter: 'deadLetterExchange',

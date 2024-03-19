@@ -48,9 +48,7 @@ function getOption (opts, key, alt) {
 }
 
 function getUri (protocol, user, pass, server, port, vhost, heartbeat) {
-  return protocol + user + ':' + pass +
-    '@' + server + ':' + port + '/' + vhost +
-    '?heartbeat=' + heartbeat;
+  return `${protocol}://${user}:${pass}@${server}:${port}/${vhost}?heartbeat=${heartbeat}`;
 }
 
 function max (x, y) {
@@ -62,7 +60,7 @@ function parseUri (uri) {
     const parsed = new url.URL(uri);
     const heartbeat = parsed.searchParams.get('heartbeat');
     return {
-      useSSL: parsed.protocol === 'amqps:',
+      useSSL: parsed.protocol === 'amqps',
       user: parsed.username,
       pass: parsed.password,
       host: parsed.hostname,
@@ -118,7 +116,7 @@ const Adapter = function (parameters) {
   const pfxPath = getOption(parameters, 'RABBIT_PFX') || getOption(parameters, 'pfxPath');
   const useSSL = certPath || keyPath || passphrase || caPaths || pfxPath || parameters.useSSL;
   const portList = getOption(parameters, 'RABBIT_PORT') || getOption(parameters, 'port', (useSSL ? 5671 : 5672));
-  this.protocol = getOption(parameters, 'RABBIT_PROTOCOL') || (useSSL ? 'amqps://' : 'amqp://');
+  this.protocol = getOption(parameters, 'RABBIT_PROTOCOL') || (useSSL ? 'amqps' : 'amqp');
   this.ports = split(portList);
   this.options = { noDelay: true };
 
@@ -153,7 +151,7 @@ Adapter.prototype.connect = function () {
   return new Promise(function (resolve, reject) {
     const attempted = [];
     const attempt = function () {
-      const nextUri = this.getNextUri();
+      const [nextUri, serverHostname] = this.getNextUri();
       log.info("Attempting connection to '%s' (%s)", this.name, nextUri);
       function onConnection (connection) {
         connection.uri = nextUri;
@@ -172,7 +170,6 @@ Adapter.prototype.connect = function () {
         }
       }
       if (attempted.indexOf(nextUri) < 0) {
-        const serverHostname = new url.URL(nextUri).hostname;
         amqp.connect(nextUri, Object.assign({ servername: serverHostname }, this.options))
           .then(onConnection.bind(this), onConnectionError.bind(this));
       } else {
@@ -195,8 +192,8 @@ Adapter.prototype.bumpIndex = function () {
 Adapter.prototype.getNextUri = function () {
   const server = this.getNext(this.servers);
   const port = this.getNext(this.ports);
-  const uri = getUri(this.protocol, this.user, escape(this.pass), server, port, this.vhost, this.heartbeat);
-  return uri;
+  const uri = getUri(this.protocol, encodeURIComponent(this.user), encodeURIComponent(this.pass), server, port, this.vhost, this.heartbeat);
+  return [uri, server];
 };
 
 Adapter.prototype.getNext = function (list) {
