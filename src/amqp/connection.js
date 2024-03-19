@@ -116,7 +116,7 @@ const Adapter = function (parameters) {
   const pfxPath = getOption(parameters, 'RABBIT_PFX') || getOption(parameters, 'pfxPath');
   const useSSL = certPath || keyPath || passphrase || caPaths || pfxPath || parameters.useSSL;
   const portList = getOption(parameters, 'RABBIT_PORT') || getOption(parameters, 'port', (useSSL ? 5671 : 5672));
-  this.protocol = getOption(parameters, 'RABBIT_PROTOCOL') || (useSSL ? 'amqps' : 'amqp');
+  this.protocol = getOption(parameters, 'RABBIT_PROTOCOL') || getOption(parameters, 'protocol', undefined)?.replace(/:\/\/$/, '') || (useSSL ? 'amqps' : 'amqp');
   this.ports = split(portList);
   this.options = { noDelay: true };
 
