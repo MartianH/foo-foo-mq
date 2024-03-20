@@ -38,12 +38,59 @@ This example shows most of the available options described above.
 ```
 
 To establish a connection with all settings in place and ready to go call configure:
+
 ```javascript
   const rabbit = require( "foo-foo-mq" );
 
   rabbit.configure( settings ).done( function() {
     // ready to go!
   } );
+```
+
+### Caveat
+
+It can happen that configure is called before RabbitMQ is running ([#23](https://github.com/Foo-Foo-MQ/foo-foo-mq/issues/23#issuecomment-921194756)), which can cause a consumer to be connected without subscribers.
+Fortunately, it is easy to handle using simple retry logic .
+
+```javascript
+const rabbit = require( "foo-foo-mq" );
+const { setTimeout } = require( "timers/promises" );
+
+async function tryConfigure(
+  settings,
+  opts
+) {
+  const retries = opts.retries || 0;
+  const maxRetries = opts.max || 10;
+  const timeoutMS = opts.timeout || 1e3;
+  try {
+    await rabbit.configure(settings);
+  } catch (error) {
+    if (error === "No endpoints could be reached" && opts.retries < maxRetries) {
+      await setTimeout(timeoutMS);
+      await rabbit.shutdown();
+      await rabbit.reset();
+      await this.tryConfigure(settings, { retries: retries + 1, ...opts });
+    } else {
+      throw error;
+    }
+  }
+  return rabbit;
+}
+
+// async/await
+try {
+  const broker = await tryConfigure(settings, { max: 30, timeout: 500 });
+    // ...
+} catch (err) {
+  console.log(err)
+}
+
+// Promise
+const rabbit = tryConfigure(settings, { max: 30, timeout: 500 });
+  .then((broker) => {
+    // ...
+  }).catch((err) => console.error(err))
 ```
 
 ## `rabbit.addExchange( exchangeName, exchangeType, [options], [connectionName] )`
