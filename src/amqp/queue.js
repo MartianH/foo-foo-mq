@@ -38,6 +38,16 @@ function aliasOptions (options, aliases, ...omit) {
   }, {});
 }
 
+function argOptions (options) {
+  const args = {
+    'x-queue-type': options.type || 'classic'
+  };
+  if (options.type === 'quorum' && options.deadLetterStrategy) {
+    args['x-dead-letter-strategy'] = options.deadLetterStrategy;
+  }
+  return args;
+}
+
 function define (channel, options, subscriber, connectionName) {
   // Quorum queues dropped support for message prioritiy, exclusivity and non-durable queues
   // See: https://www.rabbitmq.com/docs/quorum-queues#feature-matrix
@@ -52,7 +62,8 @@ function define (channel, options, subscriber, connectionName) {
     deadLetter: 'deadLetterExchange',
     deadLetterRoutingKey: 'deadLetterRoutingKey'
   }, ...omition);
-  valid.arguments = { 'x-queue-type': options.type || 'classic' };
+  valid.arguments = argOptions(options);
+
   topLog.info("Declaring queue '%s' on connection '%s' with the options: %s",
     options.uniqueName, connectionName, JSON.stringify(options));
 

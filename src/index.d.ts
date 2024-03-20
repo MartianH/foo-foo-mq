@@ -231,11 +231,14 @@ declare namespace Broker {
     limit?: number;
     queueLimit?: number;
     deadLetter?: string;
+    deadLetterRoutingKey?: string;
+    deadLetterStrategy?: "at-most-once" | "at-least-once";
     subscribe?: boolean;
     autoDelete?: boolean;
     passive?: boolean;
     messageTtl?: number;
     type?: "classic" | "quorum";
+    overflow?: "drop-head" | "reject-publish";
   }
 
   export interface BindingOptions {
