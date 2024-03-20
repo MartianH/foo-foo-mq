@@ -139,14 +139,27 @@ Options is a hash that can contain the following:
 | **noBatch** | boolean | causes ack, nack & reject to take place immediately | false |
 | **noCacheKeys** | boolean | disable cache of matched routing keys to prevent unbounded memory growth | false |
 | **queueLimit** | 2^32 |max number of ready messages a queue can hold | |
+| **overflow** | `drop-head`, `reject-publish` | Behavior when queue limit is reached, defaults to `drop-head`(discard oldest) | |
 | **messageTtl** | 2^32 |time in ms before a message expires on the queue | |
 | **expires** | 2^32 |time in ms before a queue with 0 consumers expires | |
 | **deadLetter** | string | the exchange to dead-letter messages to | |
 | **deadLetterRoutingKey** | string | the routing key to add to a dead-lettered message
+| **deadLetterStrategy** | `at-least-once`, `at-most-once` | the dead letter strategy, defaults to `at-most-once`.
 | **maxPriority** | 2^8 | the highest priority this queue supports | |
-| **unique** | `"hash", `"id", "consistent"` | creates a unique queue name by including the client id or hash in the name | |
+| **unique** | `hash`, `id`, `consistent` | creates a unique queue name by including the client id or hash in the name | |
 | **poison** | boolean | indicates that this queue is specifically for poison / rejected messages| false |
 | **passive** | boolean | when `true` will not create the queueName specified | false |
+
+### deadLetterStrategy
+
+ * `at-least-once` - enables [At-Least-Once Dead Lettering
+](https://www.rabbitmq.com/blog/2022/03/29/at-least-once-dead-lettering) since RabbitMQ v3.10 (**only** for quorum queues), provided the [feature flag](https://www.rabbitmq.com/docs/feature-flags) `stream_queue` is enabled an `overflow` is set to `reject-publish`
+ * `at-most-once` - the default strategy and backwards-compatible behavior
+
+### overflow
+
+ * `drop-head` - default behavior, drops or dead-letter messages from the front of the queue (i.e. the oldest messages in the queue)
+ * `reject-publish` - the most recently published messages will be discarded. In addition, if publisher confirms are enabled, the publisher will be informed of the reject via a basic.nack message
 
 ### unique
 
