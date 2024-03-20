@@ -82,7 +82,32 @@ describe('AMQP Queue', function () {
           .then(() => {
             amqpChannelMock.assertQueue.calledWith(
               options.uniqueName,
-              { queueLimit: options.queueLimit, arguments: { 'x-queue-type': options.type } });
+              {
+                queueLimit: options.queueLimit,
+                arguments: { 'x-queue-type': options.type }
+              });
+          });
+      });
+
+      it('sets `x-dead-letter-strategy` argument if given', () => {
+        options.type = 'quorum';
+        options.queueLimit = 1000;
+        options.maxPriority = 100;
+        options.deadLetterStrategy = 100;
+        return ampqQueue(options, topology, serializers)
+          .then((instance) => {
+            return instance.define();
+          })
+          .then(() => {
+            amqpChannelMock.assertQueue.calledWith(
+              options.uniqueName,
+              {
+                queueLimit: options.queueLimit,
+                arguments: {
+                  'x-queue-type': options.type,
+                  'x-dead-letter-strategy': options.deadLetterStrategy
+                }
+              });
           });
       });
     });
