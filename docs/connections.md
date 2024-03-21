@@ -147,7 +147,7 @@ Your goal should be building systems resilient to failures (by allowing them to 
 
 ```js
 // How to create a zombie
-var rabbit = require( "foo-foo-mq" );
+const rabbit = require( "foo-foo-mq" );
 
 rabbit.on( "unreachable", function() {
   rabbit.retry();

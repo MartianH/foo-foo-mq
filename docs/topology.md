@@ -65,7 +65,7 @@ async function tryConfigure(
   try {
     await rabbit.configure(settings);
   } catch (error) {
-    if (retries > 0) {
+    if (error === 'No endpoints could be reached' && retries > 0) {
       if (opts.defer) await setTimeout(opts.defer);
       await rabbit.shutdown();
       await rabbit.reset();

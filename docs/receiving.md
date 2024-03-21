@@ -42,7 +42,7 @@ If using the first form, the options hash can contain the following properties, 
 In this example, any possible error is caught in an explicit try/catch:
 
 ```javascript
-var handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
+const handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
   try {
     // do something meaningful?
     console.log( message.body );
@@ -67,7 +67,7 @@ This example shows how to have foo-foo-mq wrap all handlers with a try catch tha
 // that nacks the message on an error
 rabbit.nackOnError();
 
-var handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
+const handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
   console.log( message.body );
   message.ack();
 } );
@@ -83,7 +83,7 @@ rabbit.ignoreHandlerErrors();
 Provide a strategy for handling errors to multiple handles or attach an error handler after the fact.
 
 ```javascript
-var handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
+const handler = rabbit.handle( "company.project.messages.logEntry", function( message ) {
   console.log( message.body );
   message.ack();
 } );
@@ -299,7 +299,7 @@ the encoding is passed in case the message was produced by another library using
 ### `rabbit.addSerializer( contentType, serializer )`
 
 ```javascript
-var yaml = require( "js-yaml" );
+const yaml = require( "js-yaml" );
 
 rabbit.addSerializer( "application/yaml", {
   deserialize: function( bytes, encoding ) {
