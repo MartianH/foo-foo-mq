@@ -42,9 +42,10 @@ To establish a connection with all settings in place and ready to go call config
 ```javascript
   const rabbit = require( "foo-foo-mq" );
 
-  rabbit.configure( settings ).done( function() {
-    // ready to go!
-  } );
+  rabbit.configure( settings )
+    .then(() => {
+      // ready to go!
+    }).catch((err) => console.error(err))
 ```
 
 ### Caveat
@@ -61,12 +62,11 @@ async function tryConfigure(
   opts
 ) {
   const retries = opts.retries || 10;
-  const defer = opts.defer || 1e3;
   try {
     await rabbit.configure(settings);
   } catch (error) {
-    if (error === "No endpoints could be reached" && retries > 0) {
-      await setTimeout(defer);
+    if (retries > 0) {
+      if (opts.defer) await setTimeout(opts.defer);
       await rabbit.shutdown();
       await rabbit.reset();
       await this.tryConfigure(settings, { ...opts, retries: retries - 1 });
@@ -76,11 +76,6 @@ async function tryConfigure(
   }
   return rabbit;
 }
-
-const rabbit = tryConfigure(settings, { retries: 5, defer: 500 });
-  .then((broker) => {
-    // ...
-  }).catch((err) => console.error(err))
 ```
 
 ## `rabbit.addExchange( exchangeName, exchangeType, [options], [connectionName] )`
