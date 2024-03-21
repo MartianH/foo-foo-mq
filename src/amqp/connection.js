@@ -149,6 +149,7 @@ const Adapter = function (parameters) {
 
 Adapter.prototype.connect = function () {
   return new Promise(function (resolve, reject) {
+    const unreachable = 'No endpoints could be reached';
     const attempted = [];
     const attempt = function () {
       const [nextUri, serverHostname] = this.getNextUri();
@@ -166,7 +167,7 @@ Adapter.prototype.connect = function () {
           attempt(err);
         } else {
           log.info('Cannot connect to `%s` - all endpoints failed', this.name);
-          reject('No endpoints could be reached');
+          reject(unreachable);
         }
       }
       if (attempted.indexOf(nextUri) < 0) {
@@ -174,7 +175,7 @@ Adapter.prototype.connect = function () {
           .then(onConnection.bind(this), onConnectionError.bind(this));
       } else {
         log.info('Cannot connect to `%s` - all endpoints failed', this.name);
-        reject('No endpoints could be reached');
+        reject(unreachable);
       }
     }.bind(this);
     attempt();
