@@ -50,7 +50,7 @@ To establish a connection with all settings in place and ready to go call config
 ### Caveat
 
 It can happen that configure is called before RabbitMQ is running ([#23](https://github.com/Foo-Foo-MQ/foo-foo-mq/issues/23#issuecomment-921194756)), which can cause a consumer to be connected without subscribers.
-Fortunately, it is easy to handle using simple retry logic .
+Fortunately, it is easy to handle using simple retry logic.
 
 ```javascript
 const rabbit = require( "foo-foo-mq" );
@@ -60,17 +60,16 @@ async function tryConfigure(
   settings,
   opts
 ) {
-  const retries = opts.retries || 0;
-  const maxRetries = opts.max || 10;
-  const timeoutMS = opts.timeout || 1e3;
+  const retries = opts.retries || 10;
+  const defer = opts.defer || 1e3;
   try {
     await rabbit.configure(settings);
   } catch (error) {
-    if (error === "No endpoints could be reached" && opts.retries < maxRetries) {
-      await setTimeout(timeoutMS);
+    if (error === "No endpoints could be reached" && retries > 0) {
+      await setTimeout(defer);
       await rabbit.shutdown();
       await rabbit.reset();
-      await this.tryConfigure(settings, { retries: retries + 1, ...opts });
+      await this.tryConfigure(settings, { ...opts, retries: retries - 1 });
     } else {
       throw error;
     }
@@ -80,14 +79,14 @@ async function tryConfigure(
 
 // async/await
 try {
-  const broker = await tryConfigure(settings, { max: 30, timeout: 500 });
+  const broker = await tryConfigure(settings, { retries: 5, defer: 500 });
     // ...
 } catch (err) {
   console.log(err)
 }
 
 // Promise
-const rabbit = tryConfigure(settings, { max: 30, timeout: 500 });
+const rabbit = tryConfigure(settings, { retries: 5, defer: 500 });
   .then((broker) => {
     // ...
   }).catch((err) => console.error(err))
@@ -121,11 +120,9 @@ The call returns a promise that can be used to determine when the queue has been
 
 Options is a hash that can contain the following:
 
-> **WARNING** classic queues [are deprecated](https://www.rabbitmq.com/blog/2021/08/21/4.0-deprecation-announcements) and will [no longer be supported after v3.13](https://www.rabbitmq.com/blog/2024/03/11/rabbitmq-3.13.0-announcement#thats-a-wrap-for-3x).
+> **Warning:** classic queues [are deprecated](https://www.rabbitmq.com/blog/2021/08/21/4.0-deprecation-announcements) and will no longer be supported [after v3.13](https://www.rabbitmq.com/blog/2024/03/11/rabbitmq-3.13.0-announcement#thats-a-wrap-for-3x).
 >
-> Unsupported options ('exclusive', 'autoDelete', 'maxPriority') given to `quorum` queues will be *silently ignored*.
->
-> Consult the [RabbitMQ feature matrix](https://www.rabbitmq.com/docs/quorum-queues#feature-matrix) for supported features.
+> As such, [unsupported options](https://www.rabbitmq.com/docs/quorum-queues#feature-matrix) (`exclusive`, `autoDelete`, `maxPriority`) given to quorum queues will be *silently ignored*.
 
 | option | type | description | default  |
 |--:|:-:|:--|:-:|
@@ -153,7 +150,9 @@ Options is a hash that can contain the following:
 ### deadLetterStrategy
 
  * `at-least-once` - enables [At-Least-Once Dead Lettering
-](https://www.rabbitmq.com/blog/2022/03/29/at-least-once-dead-lettering) since RabbitMQ v3.10 (**only** for quorum queues), provided the [feature flag](https://www.rabbitmq.com/docs/feature-flags) `stream_queue` is enabled an `overflow` is set to `reject-publish`
+](https://www.rabbitmq.com/blog/2022/03/29/at-least-once-dead-lettering) (available since v3.10) for quorum queues, provided that:
+    * the [feature flag](https://www.rabbitmq.com/docs/feature-flags) `stream_queue` is enabled
+    * Option `overflow` is set to `reject-publish`
  * `at-most-once` - the default strategy and backwards-compatible behavior
 
 ### overflow
