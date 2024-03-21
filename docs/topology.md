@@ -77,15 +77,6 @@ async function tryConfigure(
   return rabbit;
 }
 
-// async/await
-try {
-  const broker = await tryConfigure(settings, { retries: 5, defer: 500 });
-    // ...
-} catch (err) {
-  console.log(err)
-}
-
-// Promise
 const rabbit = tryConfigure(settings, { retries: 5, defer: 500 });
   .then((broker) => {
     // ...
