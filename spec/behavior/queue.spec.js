@@ -110,6 +110,28 @@ describe('AMQP Queue', function () {
               });
           });
       });
+
+      it('Sets `x-queue-version` argument if given', () => {
+        options.type = 'classic';
+        options.queueLimit = 1000;
+        options.queueVersion = 2;
+        options.maxPriority = 100;
+        return ampqQueue(options, topology, serializers)
+          .then((instance) => {
+            return instance.define();
+          })
+          .then(() => {
+            amqpChannelMock.assertQueue.calledWith(
+              options.uniqueName,
+              {
+                ...options,
+                arguments: {
+                  'x-queue-type': options.type,
+                  'x-queue-version': options.queueVersion
+                }
+              });
+          });
+      });
     });
 
     describe('when options.type is "quorum"', function () {
@@ -150,6 +172,27 @@ describe('AMQP Queue', function () {
                 arguments: {
                   'x-queue-type': options.type,
                   'x-dead-letter-strategy': options.deadLetterStrategy
+                }
+              });
+          });
+      });
+
+      it('Omits `x-queue-version` argument if given', () => {
+        options.type = 'classic';
+        options.queueLimit = 1000;
+        options.queueVersion = 2;
+        options.maxPriority = 100;
+        return ampqQueue(options, topology, serializers)
+          .then((instance) => {
+            return instance.define();
+          })
+          .then(() => {
+            amqpChannelMock.assertQueue.calledWith(
+              options.uniqueName,
+              {
+                ...options,
+                arguments: {
+                  'x-queue-type': options.type
                 }
               });
           });

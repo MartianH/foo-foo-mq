@@ -230,6 +230,7 @@ declare namespace Broker {
     name: string;
     limit?: number;
     queueLimit?: number;
+    queueVersion?: 1 | 2;
     deadLetter?: string;
     deadLetterRoutingKey?: string;
     deadLetterStrategy?: "at-most-once" | "at-least-once";

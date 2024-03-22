@@ -39,11 +39,14 @@ function aliasOptions (options, aliases, ...omit) {
 }
 
 function argOptions (options) {
+  const queueType = options.type || 'classic';
   const args = {
-    'x-queue-type': options.type || 'classic'
+    'x-queue-type': queueType
   };
-  if (options.type === 'quorum' && options.deadLetterStrategy) {
+  if (queueType === 'quorum' && options.deadLetterStrategy) {
     args['x-dead-letter-strategy'] = options.deadLetterStrategy;
+  } else if (queueType === 'classic' && options.queueVersion) {
+    args['x-queue-version'] = options.queueVersion;
   }
   return args;
 }
@@ -52,7 +55,7 @@ function define (channel, options, subscriber, connectionName) {
   // Quorum queues dropped support for message prioritiy, exclusivity and non-durable queues
   // See: https://www.rabbitmq.com/docs/quorum-queues#feature-matrix
   const quorumIncompatible = ['exclusive', 'autoDelete', 'maxPriority'];
-  const optsFields = ['subscribe', 'limit', 'noBatch', 'unique', 'type'];
+  const optsFields = ['subscribe', 'limit', 'noBatch', 'unique', 'type', 'queueVersion'];
   const omition = options.type === 'quorum' ? [...optsFields, ...quorumIncompatible] : optsFields;
 
   const valid = aliasOptions(options, {

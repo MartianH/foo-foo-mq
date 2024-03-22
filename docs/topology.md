@@ -106,9 +106,9 @@ The call returns a promise that can be used to determine when the queue has been
 
 Options is a hash that can contain the following:
 
-> **Warning:** classic queues [are deprecated](https://www.rabbitmq.com/blog/2021/08/21/4.0-deprecation-announcements) and will no longer be supported [after v3.13](https://www.rabbitmq.com/blog/2024/03/11/rabbitmq-3.13.0-announcement#thats-a-wrap-for-3x).
+> **Warning:** Classic Mirrored Queues [are deprecated](https://www.rabbitmq.com/blog/2021/08/21/4.0-deprecation-announcements) and will no longer be supported [after v3.13](https://www.rabbitmq.com/blog/2024/03/11/rabbitmq-3.13.0-announcement#thats-a-wrap-for-3x).
 >
-> As such, [unsupported options](https://www.rabbitmq.com/docs/quorum-queues#feature-matrix) (`exclusive`, `autoDelete`, `maxPriority`) given to quorum queues will be *silently ignored*.
+> For quorum queues, [unsupported options](https://www.rabbitmq.com/docs/quorum-queues#feature-matrix) (`exclusive`, `autoDelete`, `maxPriority`) given to quorum queues will be *silently ignored*.
 
 | option | type | description | default  |
 |--:|:-:|:--|:-:|
@@ -122,6 +122,7 @@ Options is a hash that can contain the following:
 | **noBatch** | boolean | causes ack, nack & reject to take place immediately | false |
 | **noCacheKeys** | boolean | disable cache of matched routing keys to prevent unbounded memory growth | false |
 | **queueLimit** | 2^32 |max number of ready messages a queue can hold | |
+| **queueVersion** | `1`, `2` | Sets queue version for classic queues original (CQv1) and new (CQv2) | |
 | **overflow** | `drop-head`, `reject-publish` | Behavior when queue limit is reached, defaults to `drop-head`(discard oldest) | |
 | **messageTtl** | 2^32 |time in ms before a message expires on the queue | |
 | **expires** | 2^32 |time in ms before a queue with 0 consumers expires | |
