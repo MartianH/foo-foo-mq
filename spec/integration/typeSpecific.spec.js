@@ -32,7 +32,7 @@ describe('Type Handling On Any Queue', function () {
           autoDelete: true,
           subscribe: true,
           deadletter: 'rabbot-ex.deadletter',
-          type: 'quorum'
+          type: 'classic'
         }
       ],
       bindings: [
