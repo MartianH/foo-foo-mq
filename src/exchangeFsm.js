@@ -1,9 +1,12 @@
-const machina = require('machina');
-const Monologue = require('node-monologue');
-const publishLog = require('./publishLog');
-const exLog = require('./log.js')('rabbot.exchange');
-const format = require('util').format;
-const defer = require('./defer');
+import Monologue from 'node-monologue';
+import machina from 'machina';
+import { format } from 'util';
+
+import publishLog from './publishLog.js';
+import defer from './defer.js';
+import { logger } from './log.js';
+
+const exLog = logger('rabbot.exchange');
 
 /* log
   * `rabbot.exchange`
@@ -24,7 +27,7 @@ function unhandle (handlers) {
 
 const Factory = function (options, connection, topology, serializers, exchangeFn) {
   // allows us to optionally provide a mock
-  exchangeFn = exchangeFn || require('./amqp/exchange');
+  exchangeFn = exchangeFn || import('./amqp/exchange');
   const Fsm = machina.Fsm.extend({
     name: options.name,
     type: options.type,
@@ -356,4 +359,4 @@ const Factory = function (options, connection, topology, serializers, exchangeFn
   return fsm;
 };
 
-module.exports = Factory;
+export default Factory;

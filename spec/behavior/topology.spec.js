@@ -1,9 +1,11 @@
-require('../setup.js');
-const _ = require('lodash');
-const topologyFn = require('../../src/topology');
+import _ from 'lodash';
+
+import '../setup.js';
+import emitter from './emitter.js';
+import topologyFn from '../../src/topology.js';
+import info from '../../src/info.js';
+
 const noOp = function () {};
-const emitter = require('./emitter');
-const info = require('../../src/info');
 
 function connectionFn () {
   let handlers = {};
@@ -44,14 +46,14 @@ function connectionFn () {
       this.raise('failed', err);
     },
     getChannel: noOp,
-    handlers: handlers,
+    handlers,
     lastErr: '',
     lastError: function () {
       return this.lastErr;
     },
-    on: on,
+    on,
     once: on,
-    raise: raise,
+    raise,
     resetHandlers: reset,
     reset: noOp,
     state: ''

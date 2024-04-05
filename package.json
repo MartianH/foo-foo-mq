@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "engines": {
-    "node": ">=16 <=20"
+    "node": ">=20"
   },
   "repository": "https://github.com/Foo-Foo-MQ/foo-foo-mq",
   "scripts": {
@@ -73,8 +73,13 @@
     {
       "name": "Austin Young",
       "url": "http://github.com/LeankitAustin"
+    },
+    {
+      "name": "Martial Habimana",
+      "url": "https://github.com/martianH"
     }
   ],
+  "type": "module",
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -82,19 +87,19 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "chai": "^4.3.4",
+    "chai": "^4.4.1",
     "chai-as-promised": "^7.1.1",
-    "commitizen": "^4.2.3",
-    "coveralls": "^3.0.9",
+    "commitizen": "^4.3.0",
+    "coveralls": "^3.1.1",
     "cz-conventional-changelog": "^3.3.0",
     "lodash": "4.17.x",
     "mocha": "^10.0.0",
     "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^15.1.0",
     "request": "^2.83.0",
-    "semistandard": "^16.0.1",
+    "semistandard": "^17.0.0",
     "sinon": "^14.0.0",
-    "standard-version": "^9.1.1"
+    "standard-version": "^9.5.0"
   },
   "dependencies": {
     "amqplib": "~0.8.0",
@@ -103,7 +108,7 @@
     "machina": "^4.0.2",
     "node-monologue": "^2.0.0",
     "postal": "^2.0.5",
-    "uuid": "^8.2.0"
+    "uuid": "^8.3.2"
   },
   "semistandard": {
     "env": [

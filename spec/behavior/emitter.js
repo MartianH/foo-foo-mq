@@ -1,4 +1,4 @@
-module.exports = (name) => {
+export default (name) => {
   let handlers = {};
 
   function raise (ev) {
@@ -31,10 +31,10 @@ module.exports = (name) => {
 
   return {
     name: name || 'default',
-    handlers: handlers,
-    on: on,
+    handlers,
+    on,
     once: on,
-    raise: raise,
-    reset: reset
+    raise,
+    reset
   };
 };

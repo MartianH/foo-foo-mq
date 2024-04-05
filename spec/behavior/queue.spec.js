@@ -1,5 +1,5 @@
-require('../setup.js');
-const ampqQueue = require('../../src/amqp/queue');
+import '../setup.js';
+import ampqQueue from '../../src/amqp/queue.js';
 
 describe('AMQP Queue', function () {
   let amqpChannelMock, options, topology, serializers;

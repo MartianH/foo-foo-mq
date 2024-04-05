@@ -1,5 +1,5 @@
-require('../setup');
-const rabbit = require('../../src/index.js');
+import '../setup.js';
+import rabbit from '../../src/index.js';
 
 describe('Adding Queues', function () {
   describe('when the queue does not already exist', function () {

@@ -1,12 +1,16 @@
-const AckBatch = require('../ackBatch.js');
-const postal = require('postal');
+import postal from 'postal';
+import { format } from 'util';
+
+import AckBatch from '../ackBatch.js';
+import info from '../info.js';
+import { logger } from '../log.js';
+
 const dispatch = postal.channel('rabbit.dispatch');
 const responses = postal.channel('rabbit.responses');
-const info = require('../info');
-const log = require('../log')('rabbot.queue');
-const format = require('util').format;
-const topLog = require('../log')('rabbot.topology');
-const unhandledLog = require('../log')('rabbot.unhandled');
+const log = logger('rabbot.queue');
+const topLog = logger('rabbot.topology');
+const unhandledLog = logger('rabbot.unhandled');
+
 const noOp = function () {};
 
 /* log
@@ -140,9 +144,9 @@ function getNoBatchOps (channel, raw, messages, noAck) {
   }
 
   return {
-    ack: ack,
-    nack: nack,
-    reject: reject
+    ack,
+    nack,
+    reject
   };
 }
 
@@ -165,7 +169,7 @@ function getReply (channel, serializers, raw, replyQueue, connectionName) {
     if (replyTo) {
       const publishOptions = {
         type: replyType,
-        contentType: contentType,
+        contentType,
         contentEncoding: 'utf8',
         correlationId: raw.properties.messageId,
         timestamp: options && options.timestamp ? options.timestamp : Date.now(),
@@ -454,7 +458,7 @@ function subscribe (channelName, channel, topology, serializers, messages, optio
       );
     } else {
       dispatch.publish({
-        topic: topic,
+        topic,
         headers: {
           resolverNoCache: !shouldCacheKeys
         },
@@ -480,7 +484,7 @@ function unsubscribe (channel, options) {
   }
 }
 
-module.exports = function (options, topology, serializers) {
+export default function (options, topology, serializers) {
   const channelName = ['queue', options.uniqueName].join(':');
   return topology.connection.getChannel(channelName, false, 'queue channel for ' + options.name)
     .then(function (channel) {
@@ -488,8 +492,8 @@ module.exports = function (options, topology, serializers) {
       const subscriber = subscribe.bind(undefined, options.uniqueName, channel, topology, serializers, messages, options);
       const definer = define.bind(undefined, channel, options, subscriber, topology.connection.name);
       return {
-        channel: channel,
-        messages: messages,
+        channel,
+        messages,
         define: definer,
         finalize: finalize.bind(undefined, channel, messages),
         getMessageCount: getCount.bind(undefined, messages),
@@ -499,4 +503,4 @@ module.exports = function (options, topology, serializers) {
         unsubscribe: unsubscribe.bind(undefined, channel, options, messages)
       };
     });
-};
+}

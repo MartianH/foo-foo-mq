@@ -1,4 +1,4 @@
-module.exports = function (rabbit) {
+export default function (rabbit) {
   // variable to hold starting time
   const started = Date.now();
 
@@ -29,4 +29,4 @@ module.exports = function (rabbit) {
   require('./topology.js')(rabbit, 'left', 'left');
 
   console.log('Set up LEFT OK');
-};
+}

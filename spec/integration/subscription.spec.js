@@ -1,7 +1,6 @@
-require('../setup');
-const rabbit = require('../../src/index.js');
-const config = require('./configuration');
-
+import '../setup.js';
+import rabbit from '../../src/index.js';
+import config from './configuration.js';
 /*
 A promise, twice made, is not a promise for more,
 it's simply reassurance for the insecure.

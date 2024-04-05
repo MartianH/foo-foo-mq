@@ -1,8 +1,10 @@
 // This is probably not a true monad, but it seems close based on my current understanding.
 
-const Monologue = require('node-monologue');
-const machina = require('machina');
-const log = require('../log.js')('foo-foo-mq');
+import Monologue from 'node-monologue';
+import machina from 'machina';
+import { logger } from '../log.js';
+
+const log = logger('foo-foo-mq');
 let staticId = 0;
 
 /* state definitions
@@ -41,7 +43,7 @@ let staticId = 0;
     * failure due to an exception (bad code)
 */
 
-module.exports = function (options, type, factory, target, close) {
+export default function (options, type, factory, target, close) {
   const IOMonad = machina.Fsm.extend({
     id: staticId++,
     initialState: 'acquiring',
@@ -356,4 +358,4 @@ module.exports = function (options, type, factory, target, close) {
     }
   });
   return machine;
-};
+}

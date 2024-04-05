@@ -1,4 +1,4 @@
-module.exports = function (rabbit, subscribeTo) {
+export default function (rabbit, subscribeTo) {
   return rabbit.configure({
     // arguments used to establish a connection to a broker
     connection: {
@@ -58,4 +58,4 @@ module.exports = function (rabbit, subscribeTo) {
       }
     ]
   }).then(null, function () {});
-};
+}

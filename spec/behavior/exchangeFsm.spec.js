@@ -1,9 +1,11 @@
-require('../setup.js');
-const exchangeFsm = require('../../src/exchangeFsm');
-const emitter = require('./emitter');
-const defer = require('../../src/defer');
+import _ from 'lodash';
+
+import '../setup.js';
+import exchangeFsm from '../../src/exchangeFsm.js';
+import emitter from './emitter.js';
+import defer from '../../src/defer.js';
+
 const noop = () => {};
-const _ = require('lodash');
 
 function exchangeFn (options) {
   const channel = {

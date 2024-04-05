@@ -1,8 +1,10 @@
-const Monologue = require('node-monologue');
-const machina = require('machina');
-const format = require('util').format;
-const log = require('./log.js')('rabbot.connection');
-const defer = require('./defer');
+import Monologue from 'node-monologue';
+import machina from 'machina';
+import { format } from 'util';
+import defer from './defer.js';
+import { logger } from './log.js';
+
+const log = logger('rabbot.connection');
 
 /* events emitted:
   'closing' - close is initiated by user
@@ -30,9 +32,9 @@ const defer = require('./defer');
       * failed reconnection
 */
 
-const Connection = function (options, connectionFn, channelFn) {
-  channelFn = channelFn || require('./amqp/channel');
-  connectionFn = connectionFn || require('./amqp/connection');
+export default function Connection (options, connectionFn, channelFn) {
+  channelFn = channelFn || import('./amqp/channel');
+  connectionFn = connectionFn || import('./amqp/connection');
 
   let connection;
   let queues = [];
@@ -142,10 +144,10 @@ const Connection = function (options, connectionFn, channelFn) {
     getChannel: function (name, confirm, context) {
       const deferred = defer();
       this.handle('channel', {
-        name: name,
-        confirm: confirm,
-        context: context,
-        deferred: deferred
+        name,
+        confirm,
+        context,
+        deferred
       });
       return deferred.promise;
     },
@@ -384,6 +386,4 @@ const Connection = function (options, connectionFn, channelFn) {
 
   Monologue.mixInto(Fsm);
   return new Fsm();
-};
-
-module.exports = Connection;
+}

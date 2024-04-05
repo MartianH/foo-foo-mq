@@ -1,8 +1,10 @@
-const defer = require('../defer');
-const info = require('../info');
-const exLog = require('../log.js')('rabbot.exchange');
-const topLog = require('../log.js')('rabbot.topology');
-const format = require('util').format;
+import defer from '../defer.js';
+import info from '../info.js';
+import { logger } from '../log.js';
+import { format } from 'util';
+
+const exLog = logger('rabbot.exchange');
+const topLog = logger('rabbot.topology');
 
 /* log
   * `rabbot.exchange`
@@ -78,7 +80,7 @@ function publish (channel, options, topology, log, serializers, message) {
   const payload = serializer.serialize(message.body);
   const publishOptions = {
     type: message.type || '',
-    contentType: contentType,
+    contentType,
     contentEncoding: 'utf8',
     correlationId: message.correlationId || '',
     replyTo: message.replyTo || topology.replyQueue.name || '',
@@ -150,11 +152,11 @@ function publish (channel, options, topology, log, serializers, message) {
   }
 }
 
-module.exports = function (options, topology, publishLog, serializers) {
+export default function (options, topology, publishLog, serializers) {
   return topology.connection.getChannel(options.name, !options.noConfirm, 'exchange channel for ' + options.name)
     .then(function (channel) {
       return {
-        channel: channel,
+        channel,
         define: define.bind(undefined, channel, options, topology.connection.name),
         release: function () {
           if (channel) {
@@ -166,4 +168,4 @@ module.exports = function (options, topology, publishLog, serializers) {
         publish: publish.bind(undefined, channel, options, topology, publishLog, serializers)
       };
     });
-};
+}

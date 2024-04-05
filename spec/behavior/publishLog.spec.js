@@ -1,6 +1,6 @@
-require('../setup.js');
-const _ = require('lodash');
-const publishLog = require('../../src/publishLog');
+import '../setup.js';
+import _ from 'lodash';
+import publishLog from '../../src/publishLog.js';
 
 describe('Publish log', function () {
   describe('when adding a message', function () {

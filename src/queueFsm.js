@@ -1,9 +1,11 @@
-const machina = require('machina');
-const format = require('util').format;
-const Monologue = require('node-monologue');
+import machina from 'machina';
+import { format } from 'util';
+import Monologue from 'node-monologue';
+import { logger } from './log.js';
+import defer from './defer.js';
+
 Monologue.mixInto(machina.Fsm);
-const log = require('./log.js')('rabbot.queue');
-const defer = require('./defer');
+const log = logger('rabbot.queue');
 
 /* log
   * `rabbot.queue`
@@ -24,7 +26,7 @@ function unhandle (handlers) {
 
 const Factory = function (options, connection, topology, serializers, queueFn) {
   // allows us to optionally provide a mock
-  queueFn = queueFn || require('./amqp/queue');
+  queueFn = queueFn || import('./amqp/queue');
 
   const Fsm = machina.Fsm.extend({
     name: options.name,
@@ -497,4 +499,4 @@ const Factory = function (options, connection, topology, serializers, queueFn) {
   return fsm;
 };
 
-module.exports = Factory;
+export default Factory;

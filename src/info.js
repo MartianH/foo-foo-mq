@@ -1,8 +1,10 @@
-const crypto = require('crypto');
-const os = require('os');
-const format = require('util').format;
-const self = require('../package.json');
+import crypto from 'crypto';
+import os from 'os';
+import { format } from 'util';
+import { readFile } from 'node:fs/promises';
 
+const fileUrl = new URL('../package.json', import.meta.url);
+const self = JSON.parse(await readFile(fileUrl, 'utf8'));
 const host = os.hostname();
 const platform = os.platform();
 const architecture = os.arch();
@@ -47,12 +49,12 @@ function getLibInfo () {
   return format('foo-foo-mq - %s', self.version);
 }
 
-module.exports = {
+export default {
   id: consumerId,
   host: getHostInfo,
   lib: getLibInfo,
   process: getProcessInfo,
   createTag: createConsumerTag,
   createHash: createConsumerHash,
-  createConsistentHash: createConsistentHash
+  createConsistentHash
 };

@@ -1,6 +1,6 @@
-require('../setup');
-const rabbit = require('../../src/index.js');
-const config = require('./configuration');
+import '../setup.js';
+import rabbit from '../../src/index.js';
+import config from './configuration.js';
 
 function stallLongEnoughToARegisterUnhandleddMessages () {
   return new Promise((resolve, reject) => {

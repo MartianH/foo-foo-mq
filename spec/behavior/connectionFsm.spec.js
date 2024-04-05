@@ -1,7 +1,8 @@
-require('../setup.js');
-const connectionFn = require('../../src/connectionFsm.js');
+import '../setup.js';
+import connectionFn from '../../src/connectionFsm.js';
+import EventEmitter from 'events';
+
 const noOp = function () {};
-const EventEmitter = require('events');
 
 /* globals expect */
 
@@ -35,10 +36,10 @@ const connectionMonadFn = function () {
     close: noOp,
     createChannel: noOp,
     createConfirmChannel: noOp,
-    on: on,
-    raise: raise,
+    on,
+    raise,
     release: noOp,
-    reset: reset
+    reset
   };
   setTimeout(instance.acquire.bind(instance), 0);
   return instance;

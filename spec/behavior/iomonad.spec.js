@@ -1,7 +1,8 @@
-require('../setup.js');
-const Monad = require('../../src/amqp/iomonad.js');
-const EventEmitter = require('events');
-const util = require('util');
+import EventEmitter from 'events';
+import util from 'util';
+
+import '../setup.js';
+import Monad from '../../src/amqp/iomonad.js';
 
 const Resource = function () {
   this.closed = false;

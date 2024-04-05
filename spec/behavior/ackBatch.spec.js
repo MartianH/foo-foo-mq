@@ -1,7 +1,8 @@
-require('../setup.js');
-const postal = require('postal');
+import '../setup.js';
+import postal from 'postal';
+import AckBatch from '../../src/ackBatch.js';
+
 const signal = postal.channel('rabbit.ack');
-const AckBatch = require('../../src/ackBatch.js');
 const noOp = function () {};
 
 describe('Ack Batching', function () {

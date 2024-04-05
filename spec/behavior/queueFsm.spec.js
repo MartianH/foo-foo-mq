@@ -1,8 +1,10 @@
-require('../setup.js');
-const _ = require('lodash');
-const queueFsm = require('../../src/queueFsm');
+import _ from 'lodash';
+
+import '../setup.js';
+import emitter from './emitter.js';
+import queueFsm from '../../src/queueFsm.js';
+
 const noOp = function () {};
-const emitter = require('./emitter');
 
 function channelFn (options) {
   const channel = {

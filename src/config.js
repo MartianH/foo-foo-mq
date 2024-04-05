@@ -1,4 +1,6 @@
-const log = require('./log')('rabbot.configuration');
+import { logger } from './log.js';
+
+const log = logger('rabbot.configuration');
 
 /* log
   * `rabbot.configuration`
@@ -6,7 +8,7 @@ const log = require('./log')('rabbot.configuration');
       * configuration failed (in exchange, queue or bindings)
 */
 
-module.exports = function (Broker) {
+export default function (Broker) {
   Broker.prototype.configure = function (config) {
     const emit = this.emit.bind(this);
     const configName = config.name || 'default';
@@ -67,4 +69,4 @@ module.exports = function (Broker) {
     }.bind(this));
     return this.configuring[configName];
   };
-};
+}

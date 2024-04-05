@@ -1,4 +1,4 @@
-const defer = require('./defer');
+import defer from './defer.js';
 
 function add (state, m) {
   if (!state.messages.sequenceNo) {
@@ -83,8 +83,8 @@ function publishLog () {
     onceEmptied: getEmptyPromise.bind(undefined, state),
     reset: reset.bind(undefined, state),
     remove: remove.bind(undefined, state),
-    state: state
+    state
   };
 }
 
-module.exports = publishLog;
+export default publishLog;

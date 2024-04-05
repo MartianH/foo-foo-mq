@@ -1,4 +1,4 @@
-function defer () {
+export default function defer () {
   const deferred = {
     resolve: null,
     reject: null,
@@ -10,5 +10,3 @@ function defer () {
   });
   return deferred;
 }
-
-module.exports = defer;

@@ -1,4 +1,4 @@
-module.exports = function (rabbit) {
+export default function (rabbit) {
   return rabbit.configure({
 
     // arguments used to establish a connection to a broker
@@ -45,4 +45,4 @@ module.exports = function (rabbit) {
   }).then(null, function (err) {
     console.error('Could not connect or configure:', err);
   });
-};
+}

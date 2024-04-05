@@ -1,9 +1,10 @@
-require('../../setup');
-const fs = require('fs');
-const path = require('path');
-const ampqlib = require('amqplib');
-const rabbit = require('../../../src/index.js');
-const config = require('../../integration/configuration');
+import '../../setup';
+import fs from 'fs';
+import path from 'path';
+import ampqlib from 'amqplib';
+
+import rabbit from '../../../src/index.js';
+import config from '../../integration/configuration.js';
 
 describe('AMQP Connection', function () {
   describe('ssl support options when values are not paths', function () {

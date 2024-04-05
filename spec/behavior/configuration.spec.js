@@ -1,4 +1,6 @@
-require('../setup.js');
+import '../setup.js';
+
+import { Broker as BaseBroker } from '../../src/index.js';
 
 describe('Configuration', function () {
   const noOp = function () {};
@@ -9,17 +11,20 @@ describe('Configuration', function () {
     configureQueues: noOp,
     once: noOp
   };
-  const Broker = function (conn) {
-    this.connection = conn;
-    this.configurations = {};
-    this.configuring = {};
-  };
+  class Broker extends BaseBroker {
+    constructor (conn) {
+      super();
+      this.connection = conn;
+      this.configurations = {};
+      this.configuring = {};
+    }
 
-  Broker.prototype.addConnection = function () {
-    return Promise.resolve(this.connection);
-  };
+    addConnection () {
+      return Promise.resolve(this.connection);
+    }
 
-  Broker.prototype.emit = function () {};
+    emit () { }
+  }
 
   describe('with valid configuration', function () {
     const config = {
@@ -42,7 +47,6 @@ describe('Configuration', function () {
         .once()
         .withArgs(config.bindings, 'test')
         .returns(Promise.resolve(true));
-      require('../../src/config')(Broker);
 
       const broker = new Broker(connection);
 
@@ -79,7 +83,6 @@ describe('Configuration', function () {
         .once()
         .withArgs(config.bindings, 'test')
         .returns(Promise.resolve(true));
-      require('../../src/config')(Broker);
 
       const broker = new Broker(connection);
 
@@ -113,7 +116,6 @@ describe('Configuration', function () {
         .never();
       connectionMock.expects('configureBindings')
         .never();
-      require('../../src/config')(Broker);
 
       const broker = new Broker(connection);
 
@@ -156,7 +158,6 @@ describe('Configuration', function () {
         .returns(Promise.reject(new Error("Not feelin' it today")));
       connectionMock.expects('configureBindings')
         .never();
-      require('../../src/config')(Broker);
 
       const broker = new Broker(connection);
 
@@ -201,7 +202,6 @@ describe('Configuration', function () {
         .once()
         .withArgs(config.bindings, 'test')
         .returns(Promise.reject(new Error("Not feelin' it today")));
-      require('../../src/config')(Broker);
 
       const broker = new Broker(connection);
 
