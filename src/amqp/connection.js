@@ -1,7 +1,7 @@
 import amqp from 'amqplib';
 import fs from 'fs';
-import { CallbackModel as AmqpConnection } from 'amqplib/lib/callback_model';
-import monad from './iomonad';
+import { CallbackModel as AmqpConnection } from 'amqplib/lib/callback_model.js';
+import monad from './iomonad.js';
 import info from '../info.js';
 import url from 'url';
 import crypto from 'crypto';

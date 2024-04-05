@@ -1,4 +1,4 @@
-import { Channel as AmqpChannel } from 'amqplib/lib/callback_model';
+import { Channel as AmqpChannel } from 'amqplib/lib/callback_model.js';
 import monad from './iomonad.js';
 import { logger } from '../log.js';
 

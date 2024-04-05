@@ -1,5 +1,6 @@
-const rabbit = require('../../src/index.js');
-const fs = require('fs');
+import fs from 'fs';
+import topology from './topology.js';
+import rabbit from '../../src/index.js';
 
 rabbit.log(
   { level: 'debug', stream: fs.createWriteStream('./debug.log'), objectMode: true }
@@ -19,7 +20,7 @@ rabbit.handle('subscriber.request', function (msg) {
 // services that will be using the same topology to avoid
 // scenarios where you have race conditions around when
 // exchanges, queues or bindings are in place
-require('./topology.js')(rabbit, 'requests')
+topology(rabbit, 'requests')
   .then(function (x) {
     console.log('ready');
   });

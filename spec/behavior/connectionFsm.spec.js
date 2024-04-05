@@ -1,5 +1,5 @@
 import '../setup.js';
-import connectionFn from '../../src/connectionFsm.js';
+import { connectionFn } from '../../src/connectionFsm.js';
 import EventEmitter from 'events';
 
 const noOp = function () {};

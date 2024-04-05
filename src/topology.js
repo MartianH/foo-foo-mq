@@ -2,6 +2,8 @@ import Monologue from 'node-monologue';
 
 import info from './info.js';
 import { logger } from './log.js';
+import exchangeFsmDefault from './exchangeFsm.js';
+import queueFsmDefault from './queueFsm.js';
 
 const log = logger('rabbot.topology');
 let Exchange, Queue;
@@ -405,8 +407,8 @@ Monologue.mixInto(Topology);
 
 export default function (connection, options, serializers, unhandledStrategies, returnedStrategies, exchangeFsm, queueFsm, defaultId) {
   // allows us to optionally provide mocks and control the default queue name
-  Exchange = exchangeFsm || import('./exchangeFsm.js');
-  Queue = queueFsm || import('./queueFsm.js');
+  Exchange = exchangeFsm || exchangeFsmDefault;
+  Queue = queueFsm || queueFsmDefault;
   replyId = defaultId || info.id;
 
   return new Topology(connection, options, serializers, unhandledStrategies, returnedStrategies);

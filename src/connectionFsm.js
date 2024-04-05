@@ -4,6 +4,9 @@ import { format } from 'util';
 import defer from './defer.js';
 import { logger } from './log.js';
 
+import amqpChannel from './amqp/channel.js';
+import amqpConnection from './amqp/connection.js';
+
 const log = logger('rabbot.connection');
 
 /* events emitted:
@@ -32,9 +35,9 @@ const log = logger('rabbot.connection');
       * failed reconnection
 */
 
-export default function Connection (options, connectionFn, channelFn) {
-  channelFn = channelFn || import('./amqp/channel');
-  connectionFn = connectionFn || import('./amqp/connection');
+export function connectionFn (options, connectionFn, channelFn) {
+  channelFn = channelFn || amqpChannel;
+  connectionFn = connectionFn || amqpConnection;
 
   let connection;
   let queues = [];

@@ -1,5 +1,5 @@
 import Monologue from 'node-monologue';
-import connectionFn from './connectionFsm.js';
+import { connectionFn } from './connectionFsm.js';
 import topologyFn from './topology.js';
 import postal from 'postal';
 import * as uuid from 'uuid';
@@ -78,8 +78,6 @@ export class Broker {
   }
 
   addConnection (opts) {
-    const self = this;
-
     const options = Object.assign({}, {
       name: DEFAULT,
       retryLimit: 3,
@@ -89,48 +87,48 @@ export class Broker {
     let connection;
 
     const connectionPromise = new Promise((resolve, reject) => {
-      if (!self.connections[name]) {
+      if (!this.connections[name]) {
         connection = connectionFn(options);
         const topology = topologyFn(connection, options, serializers, unhandledStrategies, returnedStrategies);
 
         connection.on('connected', () => {
-          self.emit('connected', connection);
-          self.emit(connection.name + '.connection.opened', connection);
-          self.setAckInterval(500);
+          this.emit('connected', connection);
+          this.emit(connection.name + '.connection.opened', connection);
+          this.setAckInterval(500);
           resolve(topology);
         });
 
         connection.on('closed', () => {
-          self.emit('closed', connection);
-          self.emit(connection.name + '.connection.closed', connection);
+          this.emit('closed', connection);
+          this.emit(connection.name + '.connection.closed', connection);
           reject(new Error('connection closed'));
         });
 
         connection.on('failed', (err) => {
-          self.emit('failed', connection);
-          self.emit(name + '.connection.failed', err);
+          this.emit('failed', connection);
+          this.emit(name + '.connection.failed', err);
           reject(err);
         });
 
         connection.on('unreachable', () => {
-          self.emit('unreachable', connection);
-          self.emit(name + '.connection.unreachable');
-          self.clearAckInterval();
+          this.emit('unreachable', connection);
+          this.emit(name + '.connection.unreachable');
+          this.clearAckInterval();
           reject(new Error('connection unreachable'));
         });
 
         connection.on('return', (raw) => {
-          self.emit('return', raw);
+          this.emit('return', raw);
         });
-        self.connections[name] = topology;
+        this.connections[name] = topology;
       } else {
-        connection = self.connections[name];
+        connection = this.connections[name];
         connection.connection.connect();
         resolve(connection);
       }
     });
 
-    if (!this.connections[name].promise) {
+    if (!this.connections[name]?.promise) {
       this.connections[name].promise = connectionPromise;
     }
     return connectionPromise;
@@ -175,7 +173,7 @@ export class Broker {
     );
   }
 
-  bulkPublish (set, connectionName = DEFAULT) {
+  async bulkPublish (set, connectionName = DEFAULT) {
     if (set.connectionName) {
       connectionName = set.connectionName;
     }
@@ -208,31 +206,29 @@ export class Broker {
       }, [])
       : Object.keys(set);
 
-    return this.onExchanges(exchangeNames, connectionName)
-      .then(exchanges => {
-        if (!Array.isArray(set)) {
-          const keys = Object.keys(set);
-          return Promise.all(keys.map(exchangeName => {
-            return Promise.all(set[exchangeName].map(message => {
-              const exchange = exchanges[exchangeName];
-              if (exchange) {
-                return publish(exchange, message);
-              } else {
-                return Promise.reject(new Error(`Publish failed - no exchange ${exchangeName} on connection ${connectionName} is defined`));
-              }
-            }));
-          }));
+    const exchanges1 = await this.onExchanges(exchangeNames, connectionName);
+    if (!Array.isArray(set)) {
+      const keys = Object.keys(set);
+      return Promise.all(keys.map(exchangeName => {
+        return Promise.all(set[exchangeName].map(message1 => {
+          const exchange2 = exchanges1[exchangeName];
+          if (exchange2) {
+            return publish(exchange2, message1);
+          } else {
+            return Promise.reject(new Error(`Publish failed - no exchange ${exchangeName} on connection ${connectionName} is defined`));
+          }
+        }));
+      }));
+    } else {
+      return Promise.all(set.map(message2 => {
+        const exchange3 = exchanges1[message2.exchange];
+        if (exchange3) {
+          return publish(exchange3, message2);
         } else {
-          return Promise.all(set.map(message => {
-            const exchange = exchanges[message.exchange];
-            if (exchange) {
-              return publish(exchange, message);
-            } else {
-              return Promise.reject(new Error(`Publish failed - no exchange ${message.exchange} on connection ${connectionName} is defined`));
-            }
-          }));
+          return Promise.reject(new Error(`Publish failed - no exchange ${message2.exchange} on connection ${connectionName} is defined`));
         }
-      });
+      }));
+    }
   }
 
   clearAckInterval () {
@@ -335,7 +331,7 @@ export class Broker {
     unhandledStrategies.onUnhandled = unhandledStrategies.rejectOnUnhandled;
   }
 
-  onExchange (exchangeName, connectionName = DEFAULT) {
+  async onExchange (exchangeName, connectionName = DEFAULT) {
     const promises = [
       this.connections[connectionName].promise,
       this.connections[connectionName].promises[`exchange:${exchangeName}`]
@@ -343,46 +339,37 @@ export class Broker {
     if (this.configuring[connectionName]) {
       promises.push(this.configuring[connectionName]);
     }
-    return Promise.all(promises)
-      .then(
-        () => this.getExchange(exchangeName, connectionName)
-      );
+    await Promise.all(promises);
+    return this.getExchange(exchangeName, connectionName);
   }
 
-  onExchanges (exchanges, connectionName = DEFAULT) {
+  async onExchanges (exchanges, connectionName = DEFAULT) {
     const connectionPromises = [this.connections[connectionName].promise];
     if (this.configuring[connectionName]) {
       connectionPromises.push(this.configuring[connectionName]);
     }
     const set = {};
-    return Promise.all(connectionPromises)
-      .then(
-        () => {
-          const exchangePromises = exchanges.map(exchangeName => this.connections[connectionName].promises[`exchange:${exchangeName}`]
-            .then(() => {
-              return { name: exchangeName, exchange: true };
-            })
-          );
-          return Promise.all(exchangePromises);
-        }
-      ).then(
-        list => {
-          list.forEach(item => {
-            if (item && item.exchange) {
-              const exchange = this.getExchange(item.name, connectionName);
-              set[item.name] = exchange;
-            }
-          });
-          return set;
-        }
-      );
+    await Promise.all(connectionPromises);
+    const exchangePromises = exchanges.map(exchangeName => this.connections[connectionName].promises[`exchange:${exchangeName}`]
+      .then(() => {
+        return { name: exchangeName, exchange: true };
+      })
+    );
+    const list = await Promise.all(exchangePromises);
+    list.forEach(item => {
+      if (item && item.exchange) {
+        const exchange = this.getExchange(item.name, connectionName);
+        set[item.name] = exchange;
+      }
+    });
+    return set;
   }
 
   onReturned (handler) {
     returnedStrategies.onReturned = returnedStrategies.customOnReturned = handler;
   }
 
-  publish (exchangeName, type, message, routingKey, correlationId, connectionName, sequenceNo) {
+  async publish (exchangeName, type, message, routingKey, correlationId, connectionName, sequenceNo) {
     const timestamp = Date.now();
     let options;
     if (typeof type === 'object') {
@@ -418,14 +405,12 @@ export class Broker {
       options.body = options.body.toString();
     }
 
-    return this.onExchange(exchangeName, connectionName)
-      .then(exchange => {
-        if (exchange) {
-          return exchange.publish(options);
-        } else {
-          return Promise.reject(new Error(`Publish failed - no exchange ${exchangeName} on connection ${connectionName} is defined`));
-        }
-      });
+    const exchange = await this.onExchange(exchangeName, connectionName);
+    if (exchange) {
+      return exchange.publish(options);
+    } else {
+      return Promise.reject(new Error(`Publish failed - no exchange ${exchangeName} on connection ${connectionName} is defined`));
+    }
   }
 
   purgeQueue (queueName, connectionName = DEFAULT) {
@@ -443,7 +428,7 @@ export class Broker {
       });
   }
 
-  request (exchangeName, options = {}, notify, connectionName = DEFAULT) {
+  async request (exchangeName, options = {}, notify, connectionName = DEFAULT) {
     const requestId = uuid.v1();
     options.messageId = requestId;
     options.connectionName = options.connectionName || connectionName;
@@ -452,36 +437,33 @@ export class Broker {
       return Promise.reject(new Error(`Request failed - no connection ${options.connectionName} has been configured`));
     }
 
-    return this.onExchange(exchangeName, options.connectionName)
-      .then(exchange => {
-        const connection = this.connections[options.connectionName].options;
-        const publishTimeout = options.timeout || exchange.publishTimeout || connection.publishTimeout || 500;
-        const replyTimeout = options.replyTimeout || exchange.replyTimeout || connection.replyTimeout || (publishTimeout * 2);
-
-        return new Promise((resolve, reject) => {
-          const timeout = setTimeout(function () {
-            subscription.unsubscribe();
-            reject(new Error('No reply received within the configured timeout of ' + replyTimeout + ' ms'));
-          }, replyTimeout);
-          const scatter = options.expect;
-          let remaining = options.expect;
-          const subscription = responses.subscribe(requestId, message => {
-            const end = scatter
-              ? --remaining <= 0
-              : message.properties.headers.sequence_end;
-            if (end) {
-              clearTimeout(timeout);
-              if (!scatter || remaining === 0) {
-                resolve(message);
-              }
-              subscription.unsubscribe();
-            } else if (notify) {
-              notify(message);
-            }
-          });
-          this.publish(exchangeName, options);
-        });
+    const exchange = await this.onExchange(exchangeName, options.connectionName);
+    const connection = this.connections[options.connectionName].options;
+    const publishTimeout = options.timeout || exchange.publishTimeout || connection.publishTimeout || 500;
+    const replyTimeout = options.replyTimeout || exchange.replyTimeout || connection.replyTimeout || (publishTimeout * 2);
+    return await new Promise((resolve, reject) => {
+      const timeout = setTimeout(function () {
+        subscription.unsubscribe();
+        reject(new Error('No reply received within the configured timeout of ' + replyTimeout + ' ms'));
+      }, replyTimeout);
+      const scatter = options.expect;
+      let remaining = options.expect;
+      const subscription = responses.subscribe(requestId, message1 => {
+        const end = scatter
+          ? --remaining <= 0
+          : message1.properties.headers.sequence_end;
+        if (end) {
+          clearTimeout(timeout);
+          if (!scatter || remaining === 0) {
+            resolve(message1);
+          }
+          subscription.unsubscribe();
+        } else if (notify) {
+          notify(message1);
+        }
       });
+      this.publish(exchangeName, options);
+    });
   }
 
   reset () {
@@ -502,11 +484,9 @@ export class Broker {
     this.ackIntervalId = setInterval(this.batchAck, interval);
   }
 
-  shutdown () {
-    return this.closeAll(true)
-      .then(() => {
-        this.clearAckInterval();
-      });
+  async shutdown () {
+    await this.closeAll(true);
+    this.clearAckInterval();
   }
 
   startSubscription (queueName, exclusive = false, connectionName = DEFAULT) {

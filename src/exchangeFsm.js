@@ -5,6 +5,7 @@ import { format } from 'util';
 import publishLog from './publishLog.js';
 import defer from './defer.js';
 import { logger } from './log.js';
+import amqpExchange from './amqp/exchange.js';
 
 const exLog = logger('rabbot.exchange');
 
@@ -27,7 +28,7 @@ function unhandle (handlers) {
 
 const Factory = function (options, connection, topology, serializers, exchangeFn) {
   // allows us to optionally provide a mock
-  exchangeFn = exchangeFn || import('./amqp/exchange');
+  exchangeFn = exchangeFn || amqpExchange;
   const Fsm = machina.Fsm.extend({
     name: options.name,
     type: options.type,

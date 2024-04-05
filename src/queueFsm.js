@@ -3,6 +3,7 @@ import { format } from 'util';
 import Monologue from 'node-monologue';
 import { logger } from './log.js';
 import defer from './defer.js';
+import amqpQueue from './amqp/queue.js';
 
 Monologue.mixInto(machina.Fsm);
 const log = logger('rabbot.queue');
@@ -26,7 +27,7 @@ function unhandle (handlers) {
 
 const Factory = function (options, connection, topology, serializers, queueFn) {
   // allows us to optionally provide a mock
-  queueFn = queueFn || import('./amqp/queue');
+  queueFn = queueFn || amqpQueue;
 
   const Fsm = machina.Fsm.extend({
     name: options.name,

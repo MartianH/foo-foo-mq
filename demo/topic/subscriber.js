@@ -1,8 +1,11 @@
 
-const rabbit = require('../../src/index.js');
+import subscriberTopicLeft from './subscriber-topic-left.js';
+import subscriberTopicRight from './subscriber-topic-right.js';
+import topology from './topology.js';
+import rabbit from '../../src/index.js';
 
-require('./topology')(rabbit)
+topology(rabbit)
   .then(function () {
-    require('./subscriber-topic-left')(rabbit);
-    require('./subscriber-topic-right')(rabbit);
+    subscriberTopicLeft(rabbit);
+    subscriberTopicRight(rabbit);
   });

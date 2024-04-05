@@ -1,11 +1,12 @@
 // require( 'when/monitor/console' );
-const rabbit = require('../../src/index.js');
+import topology from './topology.js';
+import rabbit from '../../src/index.js';
 
 // it can make a lot of sense to share topology definition across
 // services that will be using the same topology to avoid
 // scenarios where you have race conditions around when
 // exchanges, queues or bindings are in place
-require('./topology.js')(rabbit, null, 'default')
+topology(rabbit, null, 'default')
   .then(function () {
     console.log('EVERYTHING IS PEACHY');
     publish(10000);

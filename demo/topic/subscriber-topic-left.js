@@ -1,3 +1,5 @@
+import topology from './topology.js';
+
 export default function (rabbit) {
   // variable to hold starting time
   const started = Date.now();
@@ -26,7 +28,7 @@ export default function (rabbit) {
   // services that will be using the same topology to avoid
   // scenarios where you have race conditions around when
   // exchanges, queues or bindings are in place
-  require('./topology.js')(rabbit, 'left', 'left');
+  topology(rabbit, 'left', 'left');
 
   console.log('Set up LEFT OK');
 }

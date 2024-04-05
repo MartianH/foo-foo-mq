@@ -1,4 +1,5 @@
-const rabbit = require('../../src/index.js');
+import topology from './topology.js';
+import rabbit from '../../src/index.js';
 
 const counts = {
   timeout: 0, // variable to hold the timeout
@@ -32,7 +33,7 @@ function report () {
 // services that will be using the same topology to avoid
 // scenarios where you have race conditions around when
 // exchanges, queues or bindings are in place
-require('./topology.js')(rabbit, 'messages')
+topology(rabbit, 'messages')
   .then(() => {
     notifyPublisher();
   });

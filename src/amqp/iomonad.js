@@ -150,16 +150,18 @@ export default function (options, type, factory, target, close) {
         });
       }.bind(this));
     },
-    operate: function (call, args) {
+    operate: async function (call, args) {
       const op = { operation: call, argList: args, index: this.index };
       const promise = new Promise(function (resolve, reject) {
         op.resolve = resolve;
         op.reject = reject;
       });
       this.handle('operate', op);
-      return promise.then(null, function (err) {
-        return Promise.reject(err);
-      });
+      try {
+        return await promise;
+      } catch (err) {
+        return await Promise.reject(err);
+      }
     },
     release: function () {
       if (this.retry) {
