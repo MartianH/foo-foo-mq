@@ -40,7 +40,7 @@ This example shows most of the available options described above.
 To establish a connection with all settings in place and ready to go call configure:
 
 ```javascript
-  const rabbit = require( "foo-foo-mq" );
+  import rabbit from "foo-foo-mq";
 
   rabbit.configure( settings )
     .then(() => {
@@ -54,8 +54,8 @@ It can happen that configure is called before RabbitMQ is running ([#23](https:/
 Fortunately, it is easy to handle using simple retry logic.
 
 ```javascript
-const rabbit = require( "foo-foo-mq" );
-const { setTimeout } = require( "timers/promises" );
+import rabbit from  "foo-foo-mq";
+import { setTimeout } from  "timers/promises";
 
 async function tryConfigure(
   settings,

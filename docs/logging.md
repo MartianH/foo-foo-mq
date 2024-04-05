@@ -14,7 +14,7 @@ so you can still prefix the service with `DEBUG=rabbot.*` to get foo-foo-mq spec
 A log call is now exposed directly to make it easier to attach streams to the bole instance:
 
 ```javascript
-const rabbit = require( "foo-foo-mq" );
+import rabbit from  "foo-foo-mq";
 
 // works like bole's output call
 rabbit.log( [

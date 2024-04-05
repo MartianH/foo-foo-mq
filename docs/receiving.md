@@ -299,7 +299,7 @@ the encoding is passed in case the message was produced by another library using
 ### `rabbit.addSerializer( contentType, serializer )`
 
 ```javascript
-const yaml = require( "js-yaml" );
+import yaml from "js-yaml";
 
 rabbit.addSerializer( "application/yaml", {
   deserialize: function( bytes, encoding ) {
