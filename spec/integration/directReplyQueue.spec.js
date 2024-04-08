@@ -1,8 +1,9 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 describe('Direct Reply Queue (replyQueue: \'rabbit\')', function () {
+  const rabbit = new Broker();
   let messagesToSend;
   let harness;
   const replies = [];

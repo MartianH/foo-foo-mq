@@ -1,8 +1,9 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 describe('Batch Acknowledgments Disabled (noBatch: true)', function () {
+  const rabbit = new Broker();
   let messagesToSend;
   let harness;
 

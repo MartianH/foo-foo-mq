@@ -1,11 +1,12 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
   Demonstrates handling Messages With No Type Provided
 */
 describe('No Type Handling', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

@@ -1,5 +1,5 @@
-import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import * as chai from 'chai';
+import chaiAsPromised from '@rvagg/chai-as-promised';
 import sinon from 'sinon';
 
 chai.use(chaiAsPromised);

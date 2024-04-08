@@ -1,8 +1,9 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 describe('Unroutable Messages - Alternate Exchanges', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

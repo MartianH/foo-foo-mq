@@ -1,8 +1,9 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 
 describe('Adding Queues', function () {
   describe('when the queue does not already exist', function () {
+    const rabbit = new Broker();
     it('should error on addQueue in passive mode', function () {
       return rabbit.configure({
         connection: {
@@ -24,6 +25,7 @@ describe('Adding Queues', function () {
   });
 
   describe('when the queue does exist', function () {
+    const rabbit = new Broker();
     const existingQueueName = 'totes-exists-already';
     it('should NOT error on addQueue when in passive mode', function () {
       return rabbit.configure({

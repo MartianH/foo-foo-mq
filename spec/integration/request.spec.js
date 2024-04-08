@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 function stallLongEnoughToARegisterUnhandleddMessages () {
@@ -11,6 +11,7 @@ function stallLongEnoughToARegisterUnhandleddMessages () {
 }
 
 describe('Request & Response', function () {
+  const rabbit = new Broker();
   let harness;
   before(function () {
     return rabbit.configure({

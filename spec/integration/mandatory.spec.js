@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -8,6 +8,7 @@ The harness provides a default returned handler that captures
 returned messages and adds them to a list.
 */
 describe('Undeliverable & Mandatory: true', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

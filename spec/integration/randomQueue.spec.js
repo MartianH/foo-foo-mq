@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -12,6 +12,7 @@ Demonstrates a few things:
 It shows that you _can_ move messages between services with minimal configuration.
 */
 describe('Random Queue Name', function () {
+  const rabbit = new Broker();
   let harness;
   let queueName;
   before((done) => {

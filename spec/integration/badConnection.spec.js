@@ -1,7 +1,8 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 
 describe('Bad Connection', function () {
+  const rabbit = new Broker();
   const noop = () => {};
   describe('when attempting a connection', function () {
     let error;

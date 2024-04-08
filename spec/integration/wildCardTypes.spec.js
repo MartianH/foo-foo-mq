@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -17,6 +17,7 @@ function stallLongEnoughForBatchAckHandling () {
 }
 
 describe('Wild Card Type Handling', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function () {

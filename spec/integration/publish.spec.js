@@ -1,5 +1,6 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
+const rabbit = new Broker();
 
 describe('Publishing Messages', function () {
   describe('without a connection defined', function () {

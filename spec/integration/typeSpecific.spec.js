@@ -1,11 +1,12 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
   Demonstrates handling by type specification from *any* queue
 */
 describe('Type Handling On Any Queue', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

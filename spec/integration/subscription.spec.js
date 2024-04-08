@@ -1,11 +1,12 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 /*
 A promise, twice made, is not a promise for more,
 it's simply reassurance for the insecure.
 */
 describe('Duplicate Subscription', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

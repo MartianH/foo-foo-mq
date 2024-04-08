@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -8,6 +8,8 @@ import config from './configuration.js';
   of the bound fanout queue's.
 */
 describe('Queue Specific Handler', function () {
+  const rabbit = new Broker();
+
   describe('with standard queues', function () {
     let harness;
 

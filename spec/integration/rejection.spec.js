@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -11,6 +11,7 @@ You can easily break this by removing the binding between
 the deadletter exchange and deadletter queue (for example)
 */
 describe('Rejecting Messages To A Deadletter', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

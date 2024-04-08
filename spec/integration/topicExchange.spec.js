@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -12,6 +12,7 @@ import config from './configuration.js';
   this works when in use in rabbot.
 */
 describe('Topic Exchange With Alternate Bindings', function () {
+  const rabbit = new Broker();
   let harness;
 
   before(function (done) {

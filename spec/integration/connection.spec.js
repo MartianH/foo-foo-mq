@@ -1,8 +1,10 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 describe('Connection', function () {
+  const rabbit = new Broker();
+
   describe('on connection', function () {
     let connected;
     before(function (done) {

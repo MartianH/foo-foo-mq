@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 describe('Unhandled Strategies', function () {
@@ -16,6 +16,7 @@ describe('Unhandled Strategies', function () {
   This allows it to capture any unhandled messages as such
   and test accordingly.
   */
+  const rabbit = new Broker();
 
   describe('Custom Strategy - Capturing Messages With No Handler', function () {
     let harness;

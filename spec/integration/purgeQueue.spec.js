@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 /*
@@ -12,8 +12,9 @@ import config from './configuration.js';
 */
 describe('Purge Queue', function () {
   describe('when not subcribed', function () {
-    before(function () {
-      return rabbit.configure({
+    const rabbit = new Broker();
+    before(async function () {
+      await rabbit.configure({
         connection: config.connection,
         exchanges: [
           {
@@ -38,15 +39,12 @@ describe('Purge Queue', function () {
             keys: 'this.is.#'
           }
         ]
-      })
-        .then(
-          () =>
-            Promise.all([
-              rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
-              rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
-              rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
-            ])
-        );
+      });
+      await Promise.all([
+        rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
+        rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
+        rabbit.publish('rabbot-ex.purged', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
+      ]);
     });
 
     it('should have purged expected message count', function () {
@@ -63,21 +61,20 @@ describe('Purge Queue', function () {
         .state.should.equal('ready');
     });
 
-    after(function () {
-      return rabbit.deleteQueue('rabbot-q.purged')
-        .then(
-          () => rabbit.close('default', true)
-        );
+    after(async function () {
+      await rabbit.deleteQueue('rabbot-q.purged');
+      await rabbit.close('default', true);
     });
   });
 
   describe('when subcribed', function () {
     describe('and queue is autodelete', function () {
+      const rabbit = new Broker();
       let purgeCount;
       let harness;
       let handler;
-      before(function (done) {
-        rabbit.configure({
+      before(async function () {
+        await rabbit.configure({
           connection: config.connection,
           exchanges: [
             {
@@ -103,27 +100,14 @@ describe('Purge Queue', function () {
               keys: 'this.is.#'
             }
           ]
-        })
-          .then(
-            () => {
-              return Promise.all([
-                rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
-                rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
-                rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
-              ]);
-            }
-          )
-          .then(
-            () => {
-              return rabbit.purgeQueue('rabbot-q.purged-2')
-                .then(
-                  count => {
-                    purgeCount = count;
-                    done();
-                  }
-                );
-            }
-          );
+        });
+        await Promise.all([
+          rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
+          rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
+          rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
+        ]);
+        const count = await rabbit.purgeQueue('rabbot-q.purged-3');
+        purgeCount = count;
         harness = harnessFactory(rabbit, () => {}, 1);
         harness.handle('topic', (m) => {
           setTimeout(() => {
@@ -148,23 +132,20 @@ describe('Purge Queue', function () {
         rabbit.publish('rabbot-ex.purged-2', { type: 'topic', routingKey: 'this.is.easy', body: 'stapler' });
       });
 
-      after(function () {
-        return rabbit.deleteQueue('rabbot-q.purged-2')
-          .then(
-            () => {
-              handler.remove();
-              return rabbit.close('default', true);
-            }
-          );
+      after(async function () {
+        await rabbit.deleteQueue('rabbot-q.purged-2');
+        handler.remove();
+        await rabbit.close('default', true);
       });
     });
 
     describe('and queue is not autodelete', function () {
+      const rabbit = new Broker();
       let purgeCount;
       let harness;
       let handler;
-      before(function (done) {
-        rabbit.configure({
+      before(async function () {
+        await rabbit.configure({
           connection: config.connection,
           exchanges: [
             {
@@ -190,27 +171,14 @@ describe('Purge Queue', function () {
               keys: 'this.is.#'
             }
           ]
-        })
-          .then(
-            () => {
-              return Promise.all([
-                rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
-                rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
-                rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
-              ]);
-            }
-          )
-          .then(
-            () => {
-              return rabbit.purgeQueue('rabbot-q.purged-3')
-                .then(
-                  count => {
-                    purgeCount = count;
-                    done();
-                  }
-                );
-            }
-          );
+        });
+        await Promise.all([
+          rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.a.test', body: 'broadcast' }),
+          rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.sparta', body: 'leonidas' }),
+          rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.not.wine.wtf', body: 'socrates' })
+        ]);
+        const count = await rabbit.purgeQueue('rabbot-q.purged-3');
+        purgeCount = count;
         harness = harnessFactory(rabbit, () => {}, 1);
         harness.handle('topic', (m) => {
           setTimeout(() => {
@@ -235,14 +203,10 @@ describe('Purge Queue', function () {
         rabbit.publish('rabbot-ex.purged-3', { type: 'topic', routingKey: 'this.is.easy', body: 'stapler' });
       });
 
-      after(function () {
-        return rabbit.deleteQueue('rabbot-q.purged-3')
-          .then(
-            () => {
-              handler.remove();
-              return rabbit.close('default', true);
-            }
-          );
+      after(async function () {
+        await rabbit.deleteQueue('rabbot-q.purged-3');
+        handler.remove();
+        await rabbit.close('default', true);
       });
     });
   });

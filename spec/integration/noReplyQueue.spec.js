@@ -1,5 +1,5 @@
 import '../setup.js';
-import rabbit from '../../src/index.js';
+import { Broker } from '../../src/index.js';
 import config from './configuration.js';
 
 function stallLongEnoughToARegisterMessages () {
@@ -11,6 +11,7 @@ function stallLongEnoughToARegisterMessages () {
 }
 
 describe('No Reply Queue (replyQueue: false)', function () {
+  const rabbit = new Broker();
   let messagesToSend;
   let harness;
 
