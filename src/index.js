@@ -66,7 +66,7 @@ const serializers = {
   }
 };
 
-export class Broker {
+class BrokerInstance {
   constructor () {
     this.connections = {};
     this.hasHandles = false;
@@ -588,8 +588,8 @@ export class Broker {
   }
 }
 
-Monologue.mixInto(Broker);
+Monologue.mixInto(BrokerInstance);
 
-const broker = new Broker();
+export const Broker = BrokerInstance;
 
-export default broker;
+export default new Broker();
