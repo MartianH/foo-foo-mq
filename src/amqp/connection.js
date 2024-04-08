@@ -61,8 +61,8 @@ function parseUri (uri) {
     const heartbeat = parsed.searchParams.get('heartbeat');
     return {
       useSSL: parsed.protocol.startsWith('amqps'),
-      user: parsed.username,
-      pass: parsed.password,
+      user: decodeURIComponent(parsed.username),
+      pass: decodeURIComponent(parsed.password),
       host: parsed.hostname,
       port: parsed.port,
       vhost: parsed.pathname ? parsed.pathname.slice(1) : undefined,
