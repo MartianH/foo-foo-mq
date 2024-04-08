@@ -60,7 +60,7 @@ This contrived example is here to make it easy to see what the API looks like no
 
 
 ```js
-const rabbit = require('foo-foo-mq');
+import rabbit from 'foo-foo-mq';
 
 rabbit.handle('MyMessage', (msg) => {
   console.log('received msg', msg.body);
